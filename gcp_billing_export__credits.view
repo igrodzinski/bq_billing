@@ -1,0 +1,20 @@
+view: gcp_billing_export__credits {
+  dimension: name {
+    type: string
+    sql: ${TABLE}.name ;;
+    description: "Nazwa rabatu (np. Sustained Usage Discount, Free Tier)."
+  }
+
+  dimension: amount {
+    type: number
+    sql: ${TABLE}.amount ;;
+    description: "Kwota przyznanego rabatu."
+  }
+
+  measure: total_credit_amount {
+    type: sum
+    sql: ${amount} ;;
+    value_format_name: decimal_2
+    description: "Suma przyznanych kredytów i rabatów."
+  }
+}
