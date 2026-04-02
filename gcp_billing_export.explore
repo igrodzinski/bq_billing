@@ -1,0 +1,29 @@
+connection: "twoje_polaczenie_bigquery"
+
+include: "/views/*.view.lkml"
+
+explore: gcp_billing_export {
+  label: "GCP Billing"
+
+  # Rozwinięcie etykiet przypisanych bezpośrednio do zasobów
+  join: gcp_billing_export__labels {
+    view_label: "GCP Billing - Labels"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.labels}) AS gcp_billing_export__labels ;;
+    relationship: one_to_many
+  }
+
+  # Rozwinięcie etykiet przypisanych do całego projektu
+  join: gcp_billing_export__project__labels {
+    from: gcp_billing_export__labels
+    view_label: "GCP Billing - Project Labels"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.project}.labels) AS gcp_billing_export__project__labels ;;
+    relationship: one_to_many
+  }
+
+  # Rozwinięcie informacji o kredytach i rabatach
+  join: gcp_billing_export__credits {
+    view_label: "GCP Billing - Credits"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.credits}) AS gcp_billing_export__credits ;;
+    relationship: one_to_many
+  }
+}
