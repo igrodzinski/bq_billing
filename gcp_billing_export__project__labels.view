@@ -1,0 +1,6 @@
+join: gcp_billing_export__project__labels {
+  from: gcp_billing_export__labels # <-- Ponowne użycie już utworzonego widoku
+  view_label: "GCP Billing - Project Labels"
+  sql: LEFT JOIN UNNEST(${gcp_billing_export.project}.labels) AS gcp_billing_export__project__labels ;;
+  relationship: one_to_many
+}
