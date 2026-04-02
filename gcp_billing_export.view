@@ -1,0 +1,102 @@
+view: gcp_billing_export {
+  sql_table_name: `your_project.your_dataset.gcp_billing_export` ;;
+  view_label: "GCP Billing"
+
+  # --- Informacje o Koncie i Projekcie ---
+
+  dimension: billing_account_id {
+    type: string
+    sql: ${TABLE}.billing_account_id ;;
+    description: "Identyfikator konta rozliczeniowego Cloud Billing."
+  }
+
+  dimension: project_id {
+    type: string
+    sql: ${TABLE}.project.id ;;
+    description: "Unikalny identyfikator projektu GCP przypisany do danego zużycia."
+  }
+
+  dimension: project_name {
+    type: string
+    sql: ${TABLE}.project.name ;;
+    description: "Wyświetlana nazwa projektu GCP."
+  }
+
+  # --- Informacje o Usłudze i Zasobach (SKU) ---
+
+  dimension: service_description {
+    type: string
+    sql: ${TABLE}.service.description ;;
+    description: "Opis usługi platformy Google Cloud, np. 'Compute Engine', 'BigQuery', 'Cloud SQL'."
+  }
+
+  dimension: sku_description {
+    type: string
+    sql: ${TABLE}.sku.description ;;
+    description: "Szczegółowy opis jednostki SKU (Stock Keeping Unit) określający konkretny typ zużytego zasobu."
+  }
+
+  dimension: location_region {
+    type: string
+    sql: ${TABLE}.location.region ;;
+    description: "Region geograficzny, w którym zasób wygenerował koszty (np. 'europe-west3')."
+  }
+
+  # --- Czas i Fakturowanie ---
+
+  dimension_group: usage_start {
+    type: time
+    timeframes: [raw, time, date, week, month, quarter, year]
+    sql: ${TABLE}.usage_start_time ;;
+    description: "Czas rozpoczęcia okresu, w którym raportowane jest konkretne zużycie."
+  }
+
+  dimension_group: usage_end {
+    type: time
+    timeframes: [raw, time, date, week, month, quarter, year]
+    sql: ${TABLE}.usage_end_time ;;
+    description: "Czas zakończenia okresu, w którym raportowane jest konkretne zużycie."
+  }
+
+  dimension: invoice_month {
+    type: string
+    sql: ${TABLE}.invoice.month ;;
+    description: "Miesiąc faktury, do którego przypisano dany koszt (w formacie YYYYMM)."
+  }
+
+  # --- Koszty, Waluty i Typy ---
+
+  dimension: currency {
+    type: string
+    sql: ${TABLE}.currency ;;
+    description: "Waluta, w jakiej wystawiana jest faktura (np. USD, PLN, EUR)."
+  }
+
+  dimension: cost_type {
+    type: string
+    sql: ${TABLE}.cost_type ;;
+    description: "Określa charakterystykę rekordu: 'regular' (standardowy koszt), 'tax' (podatek) lub 'adjustment' (korekta)."
+  }
+
+  # --- Miary (Measures) ---
+
+  measure: total_cost {
+    type: sum
+    sql: ${TABLE}.cost ;;
+    value_format_name: decimal_2
+    description: "Suma całkowitych kosztów (przed nałożeniem kredytów/rabatów promocyjnych)."
+  }
+
+  measure: total_usage_amount {
+    type: sum
+    sql: ${TABLE}.usage.amount ;;
+    value_format_name: decimal_2
+    description: "Wartość ilościowa zużycia dla danego SKU (np. liczba bajtów, godzin, żądań)."
+  }
+
+  measure: count {
+    type: count
+    drill_fields: [invoice_month, project_name, service_description, sku_description, total_cost]
+    description: "Całkowita liczba rekordów bilingowych."
+  }
+}
