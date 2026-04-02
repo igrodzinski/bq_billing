@@ -1,11 +1,18 @@
 dimension: pk {
   primary_key: yes
   hidden: yes
-  sql: FARM_FINGERPRINT(CONCAT(
+  # Łączymy wszystkie techniczne pola określające unikalność rekordu
+  sql: TO_HEX(SHA256(CONCAT(
     CAST(${TABLE}.usage_start_time AS STRING),
-    ${TABLE}.sku.id,
-    ${TABLE}.project.id,
+    CAST(${TABLE}.usage_end_time AS STRING),
     CAST(${TABLE}.export_time AS STRING),
-    COALESCE(${TABLE}.usage.amount, 0)
-  )) ;;
+    IFNULL(${TABLE}.project.id, 'no-project'),
+    IFNULL(${TABLE}.service.id, 'no-service'),
+    IFNULL(${TABLE}.sku.id, 'no-sku'),
+    CAST(${TABLE}.cost AS STRING),
+    CAST(${TABLE}.usage.amount AS STRING),
+    IFNULL(${TABLE}.invoice.month, 'no-invoice'),
+    # Dodajemy unikalny indeks jeśli istnieje (częsty w nowszych eksportach)
+    IFNULL(CAST(${TABLE}.transaction_id AS STRING), 'no-tx')
+  ))) ;;
 }
