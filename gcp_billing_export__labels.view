@@ -1,0 +1,13 @@
+view: gcp_billing_export__labels {
+  dimension: key {
+    type: string
+    sql: ${TABLE}.key ;;
+    description: "Klucz etykiety zasobu."
+  }
+
+  dimension: value {
+    type: string
+    sql: ${TABLE}.value ;;
+    description: "Wartość etykiety zasobu."
+  }
+}
