@@ -1,0 +1,38 @@
+explore: gcp_billing_export {
+  label: "GCP Full Billing Analysis"
+
+  join: labels {
+    from: gcp_billing_labels
+    view_label: "Labels (Resources)"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.labels}) as labels ;;
+    relationship: one_to_many
+  }
+
+  join: project_labels {
+    from: gcp_billing_labels
+    view_label: "Labels (Project)"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.project_labels}) as project_labels ;;
+    relationship: one_to_many
+  }
+
+  join: system_labels {
+    from: gcp_billing_labels
+    view_label: "Labels (System)"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.system_labels}) as system_labels ;;
+    relationship: one_to_many
+  }
+
+  join: tags {
+    from: gcp_billing_tags
+    view_label: "Tags"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.tags}) as tags ;;
+    relationship: one_to_many
+  }
+
+  join: credits {
+    from: gcp_billing_credits
+    view_label: "Credits"
+    sql: LEFT JOIN UNNEST(${gcp_billing_export.credits}) as credits ;;
+    relationship: one_to_many
+  }
+}
