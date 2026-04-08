@@ -1,0 +1,18 @@
+view: gcp_billing_labels {
+  dimension: key { type: string sql: ${TABLE}.key ;; }
+  dimension: value { type: string sql: ${TABLE}.value ;; }
+}
+
+view: gcp_billing_credits {
+  dimension: name { type: string sql: ${TABLE}.name ;; }
+  dimension: id { type: string sql: ${TABLE}.id ;; }
+  dimension: type { type: string sql: ${TABLE}.type ;; }
+  measure: credit_amount { type: sum sql: ${TABLE}.amount ;; value_format_name: decimal_2 }
+}
+
+view: gcp_billing_tags {
+  dimension: key { type: string sql: ${TABLE}.key ;; }
+  dimension: value { type: string sql: ${TABLE}.value ;; }
+  dimension: namespace { type: string sql: ${TABLE}.namespace ;; }
+  dimension: inherited { type: yesno sql: ${TABLE}.inherited ;; }
+}
